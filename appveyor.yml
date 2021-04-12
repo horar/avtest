@@ -53,3 +53,14 @@ deploy:
   force_update: true
   on:
     appveyor_repo_tag: true
+- provider: GitLab
+  tag: $(APPVEYOR_REPO_TAG_NAME)
+  release: $(APPVEYOR_REPO_TAG_NAME)
+  description: release description...
+  auth_token:
+    secure: x7ZSG2iQyNioIlyguchg7/Tzl5NzY521hr8Op0H4EQt/kPIndb2KHe/OlGiX+GSK
+  artifact: /.*\.txt/
+  draft: true
+  force_update: true
+  on:
+    appveyor_repo_tag: true
