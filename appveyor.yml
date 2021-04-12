@@ -1,0 +1,55 @@
+version: '{branch}-{build}'
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  except:
+  - gh-pages
+image: Visual Studio 2017
+environment:
+  DZ: 0
+  MSYS2_DIR: C:\msys64
+  matrix:
+  - DZZ: 1
+    MSYSTEM: MINGW64
+  - DZZ: 2
+    MSYSTEM: MINGW32
+cache: .\build
+build_script:
+- cmd: >-
+    set "PATH=%MSYS2_DIR%\%MSYSTEM%\bin;%MSYS2_DIR%\usr\bin;%PATH%"
+
+    echo %PATH%
+
+    bash -lc "pacman -Q"
+
+    bash -lc "pacman -S --noconfirm --needed mingw64/mingw-w64-x86_64-cmake"
+
+
+    bash -lc "pacman --needed --noconfirm -S    mingw-w64-x86_64-gnutls mingw-w64-x86_64-libidn2    mingw-w64-x86_64-libunistring    mingw-w64-x86_64-nettle    mingw-w64-x86_64-gmp    mingw-w64-x86_64-p11-kit    mingw-w64-x86_64-zlib    mingw-w64-x86_64-libxml2    mingw-w64-x86_64-zlib    mingw-w64-x86_64-libxml2    mingw-w64-x86_64-lz4    mingw-w64-x86_64-libproxy"
+
+
+    if not exist build md build
+
+    copy NUL EmptyFile1.txt
+
+    cd .\build
+
+    echo "asdf" EmptyFile2.txt
+
+    dir > Listing-%DZZ%.txt
+
+    mv -v Listing-%DZZ%.txt ..
+artifacts:
+- path: Listing-*.txt
+deploy:
+- provider: GitHub
+  tag: $(APPVEYOR_REPO_TAG_NAME)
+  release: $(APPVEYOR_REPO_TAG_NAME)
+  description: release description...
+  auth_token:
+    secure: x7ZSG2iQyNioIlyguchg7/Tzl5NzY521hr8Op0H4EQt/kPIndb2KHe/OlGiX+GSK
+  artifact: /.*\.txt/
+  draft: true
+  force_update: true
+  on:
+    appveyor_repo_tag: true
